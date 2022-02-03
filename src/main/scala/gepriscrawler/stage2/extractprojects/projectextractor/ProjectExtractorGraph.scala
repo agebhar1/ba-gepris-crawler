@@ -17,49 +17,68 @@ object ProjectExtractorGraph {
 
       val body = Jsoup.parse(crawledProjectData.html).body()
       val detailSection = body.select("#detailseite > div > div > div.content_frame > div.content_inside.detailed > div.details").first()
-      val allNameFields: Seq[Element] = body.select("span.name").asScala
+      if (detailSection == null) {
+        Project(
+          crawledProjectData.resourceId,
+          title = "",
+          "",
+          subjectAreas = Seq(),
+          dfgVerfahren = "",
+          fundingStartYear = "",
+          fundingEndYear = "",
+          parentProjectId = "",
+          personProjectRelations = Seq(),
+          institutionProjectRelations = Seq(),
+          participatingSubjectAreas = Seq(),
+          internationalConnections = Seq(),
+          dfgProgrammeContactName = "TODO",
+          dfgProgrammeContactUrl = "TODO"
+        )
+      } else {
+        val allNameFields: Seq[Element] = body.select("span.name").asScala
 
-      val title = detailSection
-        .select("h1")
-        .text()
+        val title = detailSection
+          .select("h1")
+          .text()
 
-      val projectDescription = body
-        .select("#projektbeschreibung > #projekttext")
-        .text()
+        val projectDescription = body
+          .select("#projektbeschreibung > #projekttext")
+          .text()
 
-      val dfgProgramme = body
-        .select("#projektbeschreibung span.name:matches(DFG Programme) + span.value")
-        .text()
+        val dfgProgramme = body
+          .select("#projektbeschreibung span.name:matches(DFG Programme) + span.value")
+          .text()
 
 
-      val subjectAreas: Seq[String] = ExtractorHelpers.extractMultivaluesByFieldNames(detailSection, Seq("Subject Area"))
-      val internationalConnection = ExtractorHelpers.extractMultivaluesByFieldNames(body, Seq("International Connection"))
-      val participatingSubjectAreasSplitted = ExtractorHelpers.extractMultivaluesByFieldNames(body, Seq("Participating subject areas"))
+        val subjectAreas: Seq[String] = ExtractorHelpers.extractMultivaluesByFieldNames(detailSection, Seq("Subject Area"))
+        val internationalConnection = ExtractorHelpers.extractMultivaluesByFieldNames(body, Seq("International Connection"))
+        val participatingSubjectAreasSplitted = ExtractorHelpers.extractMultivaluesByFieldNames(body, Seq("Participating subject areas"))
 
-      val (start, end) = ExtractorHelpers.extractFundingDateRange(body)
+        val (start, end) = ExtractorHelpers.extractFundingDateRange(body)
 
-      val parentProjectId = ExtractorHelpers
-        .extractResourceIdsFromLinkByResourceTypeAndRegex(allNameFields)("projekt")(Seq("Subproject of"))
-        .headOption.getOrElse("")
+        val parentProjectId = ExtractorHelpers
+          .extractResourceIdsFromLinkByResourceTypeAndRegex(allNameFields)("projekt")(Seq("Subproject of"))
+          .headOption.getOrElse("")
 
-      val personProjectRelations = ProjectPersonRelationsExtractors.extractProjectPersonRelations(allNameFields)
-      val institutionProjectRelations = ProjectInstitutionRelationsExtractors.extractProjectInstitutionRelations(allNameFields)
+        val personProjectRelations = ProjectPersonRelationsExtractors.extractProjectPersonRelations(allNameFields)
+        val institutionProjectRelations = ProjectInstitutionRelationsExtractors.extractProjectInstitutionRelations(allNameFields)
 
-      Project(
-        crawledProjectData.resourceId,
-        title = title,
-        projectDescription,
-        subjectAreas = subjectAreas,
-        dfgVerfahren = dfgProgramme,
-        fundingStartYear = start,
-        fundingEndYear = end,
-        parentProjectId = parentProjectId,
-        personProjectRelations = personProjectRelations,
-        institutionProjectRelations = institutionProjectRelations,
-        participatingSubjectAreas = participatingSubjectAreasSplitted,
-        internationalConnections = internationalConnection: Seq[String],
-        dfgProgrammeContactName = "TODO",
-        dfgProgrammeContactUrl = "TODO"
-      )
+        Project(
+          crawledProjectData.resourceId,
+          title = title,
+          projectDescription,
+          subjectAreas = subjectAreas,
+          dfgVerfahren = dfgProgramme,
+          fundingStartYear = start,
+          fundingEndYear = end,
+          parentProjectId = parentProjectId,
+          personProjectRelations = personProjectRelations,
+          institutionProjectRelations = institutionProjectRelations,
+          participatingSubjectAreas = participatingSubjectAreasSplitted,
+          internationalConnections = internationalConnection: Seq[String],
+          dfgProgrammeContactName = "TODO",
+          dfgProgrammeContactUrl = "TODO"
+        )
+      }
     }
 }
