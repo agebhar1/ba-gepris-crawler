@@ -32,28 +32,7 @@ object PersonExtractorGraph {
           .select("h1")
           .text(),
         institutionName,
-        address = address,
-        phone = detailSection
-          //        TODO: Mehrsprachigkeit
-//          .select("span.name:matches(Telefon) + span")
-          .select("span.name:matches(Telephone) + span")
-          .text(),
-        fax = detailSection
-          //        TODO: Mehrsprachigkeit
-//          .select("span.name:matches(Telefax) + span")
-          .select("span.name:matches(Fax) + span")
-          .text(),
-        email = detailSection
-          //        TODO: Mehrsprachigkeit
-          .select("span.name:matches(E-Mail) + span")
-          .html()
-          .split("<img[^<]*>")
-          .mkString("@"),
-        internet = detailSection
-          //        TODO: Mehrsprachigkeit
-//          .select("span.name:matches(Internet) + span")
-          .select("span.name:matches(Website) + span")
-          .text()
+        address = address
       )
     }
 }

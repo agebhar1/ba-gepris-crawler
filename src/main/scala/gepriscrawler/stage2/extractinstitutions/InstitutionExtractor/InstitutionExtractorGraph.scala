@@ -30,20 +30,6 @@ object InstitutionExtractorGraph {
           .split("<br>")
           .map(_.trim)
           .mkString("\n"),
-        phone = detailSection
-          .select("span.name:matches(Telephone) + span")
-          .text(),
-        fax = detailSection
-          .select("span.name:matches(Fax) + span")
-          .text(),
-        email = detailSection
-          .select("span.name:matches(E-Mail) + span")
-          .html()
-          .split("<img[^<]*>")
-          .mkString("@"),
-        internet = detailSection
-          .select("span.name:matches(Website) + span > a")
-          .attr("href"),
         projectIdsOnInstitutionDetailPage = detailSection
           .select("#projekteNachProgrammen a[href^=/gepris/projekt]").asScala.to[collection.immutable.Seq]
           .map { projectLink =>

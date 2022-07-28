@@ -52,14 +52,10 @@ case class Person(
                                 personId: String,
                                 name: String,
                                 institutionName: String,
-                                address: String,
-                                phone: String,
-                                fax: String,
-                                email: String,
-                                internet: String
+                                address: String
                               )
 {
-  def toCsvRow = Seq(personId, name, institutionName, address, phone, fax, email, internet)
+  def toCsvRow = Seq(personId, name, institutionName, address)
 }
 
 object Person extends ExtractedResourceData {
@@ -67,11 +63,7 @@ object Person extends ExtractedResourceData {
     "person_id",
     "name",
     "institution_name",
-    "address",
-    "phone",
-    "fax",
-    "email",
-    "internet"
+    "address"
   )
   override val resourceTyppeForUrlQuery: String = "person"
 }
@@ -80,25 +72,17 @@ case class Institution(
                                 institutionId: String,
                                 name: String,
                                 address: String,
-                                phone: String,
-                                fax: String,
-                                email: String,
-                                internet: String,
                                 projectIdsOnInstitutionDetailPage: scala.collection.immutable.Seq[String]
                               )
 {
-  def toCsvRow: Seq[String] = Seq(institutionId, name, address, phone, fax, email, internet)
+  def toCsvRow: Seq[String] = Seq(institutionId, name, address)
 }
 
 object Institution extends ExtractedResourceData {
   val csvHeader: Seq[String] = Seq(
     "institution_id",
     "name",
-    "address",
-    "phone",
-    "fax",
-    "email",
-    "internet"
+    "address"
   )
   override val resourceTyppeForUrlQuery: String = "institution"
 }
