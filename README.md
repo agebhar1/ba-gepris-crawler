@@ -58,6 +58,8 @@ Es kann vorkommen, dass der Crawler vorzeitig terminiert, zum Beispiel weil das 
 In diesem Fall kann der Crawling-Vorgang über den Befehl ```resume-crawl FOLDER-OF-CRAWL``` fortgesetzt werden. ```FOLDER-OF-CRAWL``` ist dabei der absolute Pfad des des Ordners, in welchen der unterbrochene Crawlingvorgang seine Zwischen- und Endresultate geschrieben hat. 
 
 ## Erstellen der lauffähigen Crawler-Anwendung
+sbt verwendet einen veralteren Security Manager, daher ist es mit neuen jdk (aktuell) nicht verwendbar. Mit Version 8 funktioniert es.
+
 ### Erstellen als jar-Datei
 Über den Befehl ```sbt package``` wird eine ausführbare jar-Datei angelegt. Dafür werden, falls keine aktuellen Kompilate vorliegen, die Scala-Quelldateien im Vorfeld zu class-Dateien in Java-Bytecode kompiliert. 
 Dieses jar-Datei kann dann mittels Java ausgeführt werden, wobei Scala auf dem System installiert sein muss. 
