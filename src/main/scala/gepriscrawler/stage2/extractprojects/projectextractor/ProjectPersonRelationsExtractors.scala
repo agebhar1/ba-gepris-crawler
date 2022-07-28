@@ -17,18 +17,22 @@ object ProjectPersonRelationsExtractors {
     def extractPersonIdsFromLinksByRegex = ExtractorHelpers.extractResourceIdsFromLinkByResourceTypeAndRegex(allNameFields)("person")(_)
 
     val projectPersonRelationTypesToFieldLabelVariations: Seq[(ProjectPersonRelationType, FieldLabelVariations)] = Seq(
-      "APPLICANT" -> Seq("Applicant"),
-      "HEAD" -> Seq("Head", "Heads"),
-      "PROJECT_LEADER" -> Seq("Project leader", "Project leaders"),
+      "APPLICANT" -> Seq("Applicant", "Applicants"),
+      "HEAD" -> Seq("Head", "Heads", "Project Head", "Project Heads"),
+      "PROJECT_LEADER" -> Seq("Project leader", "Project leaders", "Leader", "Leaders"),
       "PARTICIPATING_SCIENTIST" -> Seq("Participating scientist", "Participating scientists"),
       "COAPPLICANT" -> Seq("Co-Applicant", "Co-Applicants", "Co-applicant", "Co-applicants"),
-      "FORMER_APPLICANT" -> Seq("Former applicant", "Former applicants"),
+      "FORMER_APPLICANT" -> Seq("Former applicant", "Former applicants", "Ehemaliger Antragsteller","Ehemalige Antragstellerin","Ehemalige Antragstellerinnen / Ehemalige Antragsteller", "Ehemalige Antragstellerinnen","Ehemalige Antragsteller"),
       "PARTICIPATING_PERSON" -> Seq("Participating Person", "Participating Persons"),
       "SPOKESPERSON" -> Seq("Spokesperson", "Spokespersons"),
       "FOREIGN_SPOKESPERSON" -> Seq("Foreign spokesperson", "Foreign spokespeople"),
       "DEPUTY_SPOKESPERSON" -> Seq("Deputy spokesperson", "Deputy spokespeople"),
-      "INTERNATIONAL_CO_APPLICANTS" -> Seq("International Co-Applicant", "International Co-Applicants"),
-      "COOPERATION_PARTNER" -> Seq("Cooperation partner", "Cooperation partners")
+      "INTERNATIONAL_CO_APPLICANT" -> Seq("International Co-Applicant", "International Co-Applicants"),
+      "COOPERATION_PARTNER" -> Seq("Cooperation partner", "Cooperation partners"),
+      "PARTICIPATING_RESEARCHER" -> Seq("Participating Researchers", "Participating Researcher"),
+      "CO_INVESTIGATOR" -> Seq("Co-Investigators", "Co-Investigator"),
+      "HOST" -> Seq("Host", "Hosts"),
+      "IRTG_PARTNER_SPOKESPERSON" ->Seq("IRTG-Partner: Spokesperson", "IRTG-Partner: Spokespersons")
     )
 
     projectPersonRelationTypesToFieldLabelVariations

@@ -14,12 +14,15 @@ object ProjectInstitutionRelationsExtractors {
     def extractInstitutionIdsFromLinksByRegex = ExtractorHelpers.extractResourceIdsFromLinkByResourceTypeAndRegex(allNameFields)("institution")(_)
 
     val projectInstitutionRelationTypesToFieldLabelVariations: Seq[(ProjectInstitutionRelationType, FieldLabelVariations)] = Seq(
-      "APPLYING_INSTITUTION" -> Seq("Applying institution"),
-      "CO_APPLICANT_INSTITUTION" -> Seq("Co-applicant institution"),
-      "FOREIGN_INSTITUTION" -> Seq("Foreign institution"),
-      "PARTICIPATING_INSTITUTION" -> Seq("Participating institution", "Participating Institution"),
-      "PARTICIPATING_UNIVERSITY" -> Seq("Participating university"),
-      "PARTNER_ORGANISATION" -> Seq("Participating institution", "Participating Institution")
+      "APPLICANT_INSTITUTION" -> Seq("Applicant Institution"),
+      "CO_APPLICANT_INSTITUTION" -> Seq("Co-Applicant Institution"),
+      "FOREIGN_INSTITUTION" -> Seq("Foreign Institution"),
+      "PARTICIPATING_INSTITUTION" -> Seq("Participating Institution"),
+      "PARTICIPATING_UNIVERSITY" -> Seq("Participating University"),
+      "PARTNER_ORGANISATION" -> Seq("Partner Organisation"),
+      "APPLICATION_PARTNER" -> Seq("Application Partner"),
+      "INDUSTRY" -> Seq("Business and Industry"),
+      "IRTG_PARTNER_INSTITUTION" -> Seq("IRTG-Partner Institution")
     )
 
     projectInstitutionRelationTypesToFieldLabelVariations
