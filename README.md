@@ -5,9 +5,9 @@
 
 Der Gepris Crawler ist eine in Scala geschriebene Konsolenanwendung, welche die von der DFG bereitgestellten Förderungsdaten (http://gepris.dfg.de) crawled, extrahiert und in einem Ordner in Form von CSV- und Text-Dateien zur Verfügung stellt. 
 
-Die Software entstand im Rahmen der Anfertigung der Bachelorarbeit von Daniel Spaude im Fach Informatik an der Freien Universität Berlin im Jahr 2018. 
+Die Software entstand im Rahmen der Anfertigung der Bachelorarbeit von Daniel Spaude im Fach Informatik an der Freien Universität Berlin im Jahr 2018. In diesem Repositorium wurde der Crawler 2022 an die Änderungen an der Website angepasst.
 
-## Datenqualität
+## Datenqualität (dies ist nicht mit der aktuellen Version des Crawlers getestet)
 Bei der Entwicklung wurde ein wesentlicher Fokus auf die Datenqualität gelegt. 
 Es wurden dabei Datenqualitätskriterien definiert, welche grundsätzlich relevant für die Anwendung erschienen. 
 
@@ -28,13 +28,7 @@ Wenn keine Anpassungen am Quelltext vorgenommen werden sollen und die Anwendung 
 
 ### Starten über Docker
 Der Crawler verwendet [Docker](https://www.docker.com/) als Container-Lösung, um eine möglichst einfache Inbetriebnahme zu ermöglichen. 
-Sollte ein bereits gebautes Docker-Image für die Anwendung vorliegen (bereitgestellt beispielsweise über ein Docker-Repository wie https://hub.docker.com/r/spaudanjo/gepriscrawler), ist dann ein installiertes Docker die einzige Voraussetzung zum Ausführen des Crawlers.  
-Dieser kann dann über den folgenden Befehl gestartet werden:
-
-```docker run --rm -v ~/gepris-crawls:/crawls spaudanjo/gepriscrawler:0.3 CRAWLER-BEFEHL```
-
-In diesem Beispiel ist ```gepriscrawler``` der Name des Docker-Images und 0.3 die Version des Images, wobei der Crawler-Befehl ```CRAWLER-BEFEHL``` aufgerufen wird und ```~/gepris-crawls``` das Verzeichnis auf dem Host-System ist, in welchem die Crawling-Ergebnisse abgespeichert werden sollen. Es wird innerhalb des Docker-Systems als ```/gepris-crawls``` eingebunden und kann dort von dem Crawling-Prozess genutzt werden. 
-
+Sollte ein bereits gebautes Docker-Image für die Anwendung vorliegen , ist dann ein installiertes Docker die einzige Voraussetzung zum Ausführen des Crawlers.  
 
 ### Starten über SBT
 
@@ -43,22 +37,22 @@ SBT ist ein Build-Tool, welches das Konfigurieren und Ausführen von Aufgaben wi
 
 Um den Crawler mittels SBT auf Grundlage des aktuellen Quellcodes zu kompilieren und auszuführen, kann folgender Befehl verwendet werden: 
 
-```sbt run CRAWLER-BEFEHL```
+```sbt run```
 
-### Crawler-Befehle
+### Crawler-Nutzung
 
-Unabhängig davon, ob die Anwendung über Docker oder direkt mittels SBT oder Java gestartet wird, stehen folgende Crawler-Befehle bereit: 
-
-* ```--help``` - zeigt einen Hilfetext mit Erklärungen zum Starten des Crawlers an, ähnlich dem vorliegenden
-* ```new-crawl ROOT_FOLDER``` - startet einen neuen Crawling-Vorgang und schreibt das Ergebnis in das Verzeichnis ```ROOT_FOLDER```
-* ```resume-crawl FOLDER-OF-CRAWL``` - setzt einen nicht beendeten Crawling-Vorgang fort, welcher sich im Ordner ```FOLDER-OF-CRAWL``` befindet
+Unabhängig davon, ob die Anwendung über Docker oder direkt mittels SBT oder Java gestartet wird, werden folgende Crawler-Optionen abgefragt: 
+Start eines neuen Crawls oder Fortsetzung eines angefangenen.
+Wenn ein neuer Crawl gestatet wird, wird gefragt, wo dieser gespeichert werden soll, wenn einer fortgesetzt wird, wo die bisherigen Daten liegen.
+Wenn ein Crawl fortgesetzt wird, wird noch gefragt, welche ab welcher Stufe fortgesetzt werden soll, Stufe 0 entspricht dabei im wesentlichen einem neuen Crawl. Man kann das Programm auch selbst bestimmen lassen welche Stufe fortgesetzt wird.
+Bei einem neuen Crawl oder fortsetzung auf Stufe 0 wird noch abgefragt, ob nur laufende oder nur abgeschlossene Projekte (und damit verbundene Personen und Institutionen abgerufen werden sollen). Da zum jetzigen Zeitpunkt leider die Suche von Gepris nicht erlaubt nach allen Institutionen gleizeitig zu suchen (aber irgendeine Einschränkung ist ok), muss leider diese Unterscheidung gemacht werden. Wer alle Daten haben möchte kann den Crawler zweimal laufen lassen und die Daten zusammenführen. Bei Fortsetzung auf höherer Stufe ist die Entscheidung schon durch die Daten aus Stufe 0 vorgegeben. 
 
 ### Probleme während der Ausführung
-Es kann vorkommen, dass der Crawler vorzeitig terminiert, zum Beispiel weil das von der Gepris-Anwendung verwendete Cookie invalide geworden ist. 
-In diesem Fall kann der Crawling-Vorgang über den Befehl ```resume-crawl FOLDER-OF-CRAWL``` fortgesetzt werden. ```FOLDER-OF-CRAWL``` ist dabei der absolute Pfad des des Ordners, in welchen der unterbrochene Crawlingvorgang seine Zwischen- und Endresultate geschrieben hat. 
+Es kann vorkommen, dass der Crawler vorzeitig terminiert, zum Beispiel weil das von der Gepris-Anwendung verwendete Cookie invalide geworden ist. Dies kann in Stufe 0 oder 1 passieren, da danach nur noch auf lokalen Daten gearbeietet wird.
+In diesem Fall kann der Crawling-Vorgang wie oben beschrieben fortgesetzt werden. 
 
 ## Erstellen der lauffähigen Crawler-Anwendung
-sbt verwendet einen veralteren Security Manager, daher ist es mit neuen jdk (aktuell) nicht verwendbar. Mit Version 8 funktioniert es.
+sbt verwendet einen veralteren Security Manager, daher ist es mit neuen jdk (aktuell) nicht verwendbar. Mit Java Version 8 funktioniert es.
 
 ### Erstellen als jar-Datei
 Über den Befehl ```sbt package``` wird eine ausführbare jar-Datei angelegt. Dafür werden, falls keine aktuellen Kompilate vorliegen, die Scala-Quelldateien im Vorfeld zu class-Dateien in Java-Bytecode kompiliert. 
@@ -67,7 +61,7 @@ Dieses jar-Datei kann dann mittels Java ausgeführt werden, wobei Scala auf dem 
 ### Erstellen eines Docker-Images
 Es ist auch möglich mittels eines einfachen Befehls die Anwendung als Docker-Image bereitzustellen: 
 ```sbt docker:publishLocal```
-Dieser Befehl kompiliert und packt die Anwendung und erstellt dann das Docker-Image, welches dann wie oben beschrieben ausgeführt werden kann. 
+Dieser Befehl kompiliert und packt die Anwendung und erstellt dann das Docker-Image, welches dann ausgeführt werden kann. 
 
 
 
