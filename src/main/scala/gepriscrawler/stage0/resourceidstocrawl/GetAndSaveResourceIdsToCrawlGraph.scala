@@ -15,7 +15,7 @@ import scala.concurrent.ExecutionContext
 
 object GetAndSaveResourceIdsToCrawlGraph {
 
-  def graph(exportRootPath: Path, resourceName: String, resourceLinkCssSelector: String = "div.results > h2 > a")(implicit actorSystem: akka.actor.ActorSystem, streamMaterializer: akka.stream.Materializer, executionContext: ExecutionContext): Graph[SourceShape[(String, String)], NotUsed] = GraphDSL.create() { implicit b =>
+  def graph(exportRootPath: Path, resourceName: String, status: String, resourceLinkCssSelector: String = "div.results > h2 > a")(implicit actorSystem: akka.actor.ActorSystem, streamMaterializer: akka.stream.Materializer, executionContext: ExecutionContext): Graph[SourceShape[(String, String)], NotUsed] = GraphDSL.create() { implicit b =>
     import akka.stream.scaladsl.GraphDSL.Implicits._
 
     val exportPath = Paths.get(exportRootPath.toString, "stage0", resourceName)
@@ -45,10 +45,10 @@ object GetAndSaveResourceIdsToCrawlGraph {
       val cookiePinger: SourceShape[Boolean] = b.add(Source.repeat(false))
       val cookieFlow: FlowShape[Boolean, Cookie] = b.add(CookieFlowGraph.graph)
 
-      val numberOfResources = b.add(NumberOfResourcesGraph.graph(resourceName))
+      val numberOfResources = b.add(NumberOfResourcesGraph.graph(resourceName,status))
       //TODO: for testing   val numberOfResources = b.add(Source.single(200))
       val numberOfResourcesBC = b.add(Broadcast[Int](2))
-      val paginatedResourceCatalogUrls = b.add(PaginatedResourceCatalogUrlsGraph.graph(resourceName))
+      val paginatedResourceCatalogUrls = b.add(PaginatedResourceCatalogUrlsGraph.graph(resourceName, status))
       val resourceCatalogPagesToResourceIdsToCrawl: FlowShape[(Cookie, String), (String, String)] = b.add(ResourceCatalogPagesToResourceIdsToCrawlGraph.graph(resourceName, resourceLinkCssSelector))
       val zipCookiesWithPaginatedResourceCatalogUrls = b.add(Zip[Cookie, String])
       val cookieBalancer = b.add(Balance[Cookie](2))

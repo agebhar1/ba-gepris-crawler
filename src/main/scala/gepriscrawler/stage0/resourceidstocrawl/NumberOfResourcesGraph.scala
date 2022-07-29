@@ -13,11 +13,11 @@ import scala.concurrent.ExecutionContext
 
 object NumberOfResourcesGraph {
 
-  def graph(resourceType: String)(implicit actorSystem: akka.actor.ActorSystem, streamMaterializer: akka.stream.Materializer, executionContext: ExecutionContext): Graph[FlowShape[Cookie, Int], NotUsed] = GraphDSL.create() { implicit b =>
+  def graph(resourceType: String, status: String)(implicit actorSystem: akka.actor.ActorSystem, streamMaterializer: akka.stream.Materializer, executionContext: ExecutionContext): Graph[FlowShape[Cookie, Int], NotUsed] = GraphDSL.create() { implicit b =>
     import GraphDSL.Implicits._
 
     val resourceNameForUrlQuery = gepriscrawler.GeprisResources.resourceList(resourceType).resourceTyppeForUrlQuery
-    val initialUrl = s"https://gepris.dfg.de/gepris/OCTOPUS?beginOfFunding=&bewilligungsStatus=&context=$resourceNameForUrlQuery&continentId=%23&countryKey=%23%23%23&einrichtungsart=-1&fachlicheZuordnung=%23&findButton=historyCall&gefoerdertIn=&index=0&language=en&null=All+Locations+%2F+Regions&nurProjekteMitAB=false&oldContinentId=%23&oldCountryId=%23%23%23&oldSubContinentId=%23%23&subContinentId=%23%23&task=doSearchExtended&teilprojekte=true&zk_transferprojekt=false"
+    val initialUrl = s"https://gepris.dfg.de/gepris/OCTOPUS?beginOfFunding=&bewilligungsStatus=$status&context=$resourceNameForUrlQuery&continentId=%23&countryKey=%23%23%23&einrichtungsart=-1&fachlicheZuordnung=%23&findButton=historyCall&gefoerdertIn=&index=0&language=en&null=All+Locations+%2F+Regions&nurProjekteMitAB=false&oldContinentId=%23&oldCountryId=%23%23%23&oldSubContinentId=%23%23&subContinentId=%23%23&task=doSearchExtended&teilprojekte=true&zk_transferprojekt=false"
 
     val cookies = b.add(Flow[Cookie])
     val outbound = b.add(Flow[Int])

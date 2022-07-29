@@ -50,6 +50,16 @@ package object GeprisCrawler {
 
     // STAGE 0 (CRAWL AND EXTRACT Subject Areas and List and Names of Detail ressources to crawl)
     def stage0(s: Any) = {
+      println("Extract currently running (R) or ended (E) projects?")
+      var status =readLine()
+      if(status.toUpperCase=="E")
+      {
+        status = "closed"
+      }
+      else
+      {
+        status = "running"
+      }
       println("Go on with stage0")
       CrawlerHelpers.deleteAndCreateStageFolderByStageNumber(exportPath, 0)
 
@@ -58,17 +68,17 @@ package object GeprisCrawler {
           case(_) => println("Done with crawling and extracting the subject_areas (from the official DFG Fachsystematik)")
         }
 
-        .flatMap(_ => Source.fromGraph(GetAndSaveResourceIdsToCrawlGraph.graph(exportPath, "project")).runWith(Sink.ignore))
+        .flatMap(_ => Source.fromGraph(GetAndSaveResourceIdsToCrawlGraph.graph(exportPath, "project", status)).runWith(Sink.ignore))
         .andThen {
           case(_) => println("Done with crawling all catalog pages and extracting all resource ids to consider for crawling for: projects")
         }
 
-        .flatMap(_ => Source.fromGraph(GetAndSaveResourceIdsToCrawlGraph.graph(exportPath, "person")).runWith(Sink.ignore))
+        .flatMap(_ => Source.fromGraph(GetAndSaveResourceIdsToCrawlGraph.graph(exportPath, "person", status)).runWith(Sink.ignore))
         .andThen {
           case(_) => println("Done with crawling all catalog pages and extracting all resource ids to consider for crawling for: persons")
         }
 
-        .flatMap(_ => Source.fromGraph(GetAndSaveResourceIdsToCrawlGraph.graph(exportPath, "institution", "div.subInstitution > a")).runWith(Sink.ignore))
+        .flatMap(_ => Source.fromGraph(GetAndSaveResourceIdsToCrawlGraph.graph(exportPath, "institution", status, "div.subInstitution > a")).runWith(Sink.ignore))
         .andThen {
           case(_) => println("Done with crawling all catalog pages and extracting all resource ids to consider for crawling for: institutions")
         }
