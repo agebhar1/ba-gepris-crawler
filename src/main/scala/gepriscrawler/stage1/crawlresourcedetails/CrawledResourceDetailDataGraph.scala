@@ -11,6 +11,7 @@ import org.jsoup.Jsoup
 import org.jsoup.nodes.Element
 
 import scala.concurrent.ExecutionContext
+import scala.concurrent.duration.DurationInt
 
 object CrawledResourceDetailDataGraph {
 
@@ -21,7 +22,8 @@ object CrawledResourceDetailDataGraph {
     val cookieAndUrlToCrawl = b.add(Flow[(Cookie, String)])
 
     val resourceDetailPageHttpRequest: FlowShape[(Cookie, String), (String, Element)] = b.add(Flow[(Cookie, String)]
-      .mapAsync(10) { case (cookie, resourceId) =>
+      .throttle(90, 60.seconds)
+      .mapAsync(1) { case (cookie, resourceId) =>
         Http().singleRequest(
           HttpRequest(
             uri = s"https://gepris.dfg.de/gepris/$resourceNameForUrlQuery/$resourceId?language=$crawledLanguage",

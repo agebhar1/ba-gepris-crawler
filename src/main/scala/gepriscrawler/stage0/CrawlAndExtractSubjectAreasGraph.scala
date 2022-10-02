@@ -15,6 +15,7 @@ import org.jsoup.nodes.Element
 import java.nio.file.{Path, Paths}
 import scala.collection.JavaConverters._
 import scala.concurrent.ExecutionContext
+import scala.concurrent.duration.DurationInt
 
 object CrawlAndExtractSubjectAreasGraph {
 
@@ -37,7 +38,8 @@ object CrawlAndExtractSubjectAreasGraph {
     val subjectAreaRequestAndExtractorBC = b.add(Broadcast[ResearchArea](2))
 
     val subjectAreaRequestAndExtractor: FlowShape[(String, Cookie), ResearchArea] = b.add(Flow[(String, Cookie)]
-      .mapAsync(6) { case (subjectAreaUrl, cookie) =>
+      .throttle(90, 60.seconds)
+      .mapAsync(1) { case (subjectAreaUrl, cookie) =>
         Http().singleRequest(
           HttpRequest(
             uri = subjectAreaUrl,

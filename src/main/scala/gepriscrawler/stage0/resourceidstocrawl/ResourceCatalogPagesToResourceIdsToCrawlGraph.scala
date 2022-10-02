@@ -11,12 +11,14 @@ import org.jsoup.nodes.Element
 
 import scala.collection.JavaConverters.asScalaBufferConverter
 import scala.concurrent.ExecutionContext
+import scala.concurrent.duration.DurationInt
 
 object ResourceCatalogPagesToResourceIdsToCrawlGraph {
 
   def graph(resourceType: String, resourceLinkCssSelector: String)(implicit actorSystem: akka.actor.ActorSystem, streamMaterializer: akka.stream.Materializer, executionContext: ExecutionContext): Graph[FlowShape[(Cookie, String), (String, String)], NotUsed] = GraphDSL.create() { implicit b =>
     val resourceIdToName = b.add(Flow[(Cookie, String)]
-      .mapAsync(20) { case (cookie, url) =>
+      .throttle(90, 60.seconds)
+      .mapAsync(1) { case (cookie, url) =>
         val indexRegex = ".*index=(\\d*)&.*".r
         val indexRegex(index) = url
         Http().singleRequest(
