@@ -11,6 +11,7 @@ import akka.util.ByteString
 import org.jsoup.Jsoup
 
 import scala.concurrent.ExecutionContext
+import scala.concurrent.duration.DurationInt
 
 object CrawledResourceDetailDataGraph
 {
@@ -21,7 +22,8 @@ object CrawledResourceDetailDataGraph
     val resourceNameForUrlQuery = gepriscrawler.GeprisResources.resourceList(resourceType).resourceTyppeForUrlQuery
     val cookieAndUrlToCrawl = b.add(Flow[(Cookie, String)])
     val resourceDetailPageHttpRequest = b.add(Flow[(Cookie, String)]
-      .mapAsync(10) { case (cookie, resourceId) =>
+      .throttle(90, 60.seconds)
+      .mapAsync(1) { case (cookie, resourceId) =>
         Http().singleRequest(
           HttpRequest(
             uri = s"https://gepris.dfg.de/gepris/${resourceNameForUrlQuery}/$resourceId?language=$crawledLanguage",

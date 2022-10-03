@@ -8,6 +8,7 @@ import akka.stream.{FlowShape, Graph}
 import akka.util.ByteString
 
 import scala.concurrent.ExecutionContext
+import scala.concurrent.duration.DurationInt
 
 object CrawledResourceDetailDataFromJsonAPIGraph
 {
@@ -18,7 +19,8 @@ object CrawledResourceDetailDataFromJsonAPIGraph
     val resourceNameForUrlQuery = gepriscrawler.GeprisResources.resourceList(resourceType).resourceTyppeForUrlQuery
     val resourceIdToCrawl = b.add(Flow[String])
     val resourceDetailJsonHttpRequest = b.add(Flow[String]
-      .mapAsync(2) { resourceId =>
+      .throttle(90, 60.seconds)
+      .mapAsync(1) { resourceId =>
         Http().singleRequest(
           HttpRequest(
             uri = s"https://gepris-extern.dfg.de/$resourceNameForUrlQuery/$resourceId"
